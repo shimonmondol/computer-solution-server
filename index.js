@@ -28,8 +28,13 @@ async function run() {
 
         app.post('/order', async (req, res) => {
             const order = req.body;
+            const query = { details: order.details, customer: order.customer }
+            const exists = await orderCollection.findOne(query);
+            if (exists) {
+                return res.send({ success: false, order: exists })
+            }
             const result = await orderCollection.insertOne(order);
-            res.send(result);
+            return res.send({ success: true, result });
         })
     }
     finally {
